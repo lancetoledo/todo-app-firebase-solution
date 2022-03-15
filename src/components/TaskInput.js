@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { addDoc, collection } from 'firebase/firestore'
+import { addDoc, collection,doc,setDoc } from 'firebase/firestore'
 import db from '../utils/firebase'
 
 /* TASKINPUT TODOS
@@ -14,7 +14,7 @@ How do we ADD a document(task) to Firestore?
 
 */
 
-export const TaskInput = ({tasks,setTasks}) => {
+export const TaskInput = ({tasks,setTasks,filteredTasks,userId}) => {
 
     const [input, setInput] = useState("")
 
@@ -25,13 +25,18 @@ export const TaskInput = ({tasks,setTasks}) => {
     // const handleForm = (e) => {
     //     e.preventDefault()
 
-    // const generateId = (array) => {
-    //     // This variable should hold an array of all the ids
-    //     const taskIDs = array.map((item)=> item.id)
+    const generateId = (array) => {
+        // This variable should hold an array of all the ids
+        const taskIDs = array.map((item)=> item.id)
 
-    //     console.log(taskIDs)
-    //     return Math.max(...taskIDs) + 1
-    // }
+        console.log(taskIDs)
+        if(taskIDs.length === 0) {
+            return 0
+        } else {
+            return  Math.max(...taskIDs) + 1
+        }
+        
+    }
 
     //     // Create a new todo object
     //     const newTask = {
@@ -50,19 +55,44 @@ export const TaskInput = ({tasks,setTasks}) => {
     //     setTasks([newTask,...tasks])
     // }
 
+    // const handleForm = async (e) => {
+    //     e.preventDefault()
+       
+    //     if(input) {
+    //         const collectionRef = collection(db, "tasks")
+    //         const payload = {
+    //             text: input.trim(),
+    //             status: false
+    //         }
+    //         await addDoc(collectionRef,payload)
+    //         setInput("")
+    //     }
+
+    // }
+
+    // Personalized User Handleform
     const handleForm = async (e) => {
         e.preventDefault()
-       
-        if(input) {
-            const collectionRef = collection(db, "tasks")
-            const payload = {
-                text: input.trim(),
-                status: false
-            }
-            await addDoc(collectionRef,payload)
-            setInput("")
-        }
 
+        if(input) {
+            const newTask = {
+                text: input.trim(),
+                status: false,
+                id: generateId(filteredTasks)
+            }
+            filteredTasks.push(newTask)
+
+            let tasksRef =  filteredTasks
+            const docRef = doc(db,"users", userId)
+            // payload is what do you want the document to look like
+            console.log(tasksRef)
+            const payload = {
+                tasks: tasksRef
+            }
+            // updates the database
+            setDoc(docRef, payload)
+            setInput('')
+        }
     }
 
   return (

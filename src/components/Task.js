@@ -13,7 +13,7 @@ How do we UPDATE a task status to true OR false (backend)?
 
 
 
-export const Task = ({text, task,tasks, setTasks,filteredTasks}) => {
+export const Task = ({text, task,tasks, setTasks,filteredTasks,userId}) => {
 
   // Create a state variable to keep track of mutable task
   const [mutableTask, setMutableTask] = useState(task)
@@ -35,19 +35,43 @@ export const Task = ({text, task,tasks, setTasks,filteredTasks}) => {
   //   setTasks(updatedTasks)
   // }
 
+  // const markCompleted = () => {
+  //   // console.log(filteredTasks)
+  //   // This updates the status on our FrontEnd
+  //   setMutableTask({...mutableTask, status: !mutableTask.status }) 
+
+  //   // This will update the statuses in my BACKEND with Firestore
+
+  //   const docRef = doc(db,"tasks", task.id)
+  //   const payload = {id: task.id, status: !task.status, text: task.text}
+
+  //   setDoc(docRef,payload)
+  // }
+
+  // Personalized User markCompleted
   const markCompleted = () => {
     // console.log(filteredTasks)
     // This updates the status on our FrontEnd
     setMutableTask({...mutableTask, status: !mutableTask.status }) 
 
     // This will update the statuses in my BACKEND with Firestore
+    // We now have to find the task in the array
+    const docRef = doc(db,"users", userId)
+    // FIND THE TASK IN THE ARRAY TO REPLACE IT
+    const arrayRef = filteredTasks
+    console.log(arrayRef)
+    const index = filteredTasks.indexOf(task)
+    console.log(index)
+    arrayRef[index] = {...task, status: !task.status}
 
-    const docRef = doc(db,"tasks", task.id)
-    const payload = {id: task.id, status: !task.status, text: task.text}
-
-    setDoc(docRef,payload)
+    
+    // // payload is what do you want the document to look like
+    const payload = {
+     tasks: arrayRef
+    }
+    // // // updates the database
+    setDoc(docRef, payload)
   }
-
 
 
   return (

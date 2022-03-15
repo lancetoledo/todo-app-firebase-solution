@@ -22,14 +22,11 @@ export const SignUp = () => {
                 //Payload of how your data should be structured 
                 {
                     tasks: [
-                        {
-                            text:"first todo",
-                            status:true
-                        }
+
                     ]
                 }
             )
-
+             // If there is credentials then navigate the user to the dashboard
                 if(cred) {
                     window.location ="/dashboard"
                 }

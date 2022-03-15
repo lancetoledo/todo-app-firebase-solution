@@ -1,7 +1,7 @@
 import React from 'react'
 import { FilterControl } from './FilterControl'
 import { Task } from './Task'
-import { deleteDoc, doc } from 'firebase/firestore'
+import { deleteDoc, doc,setDoc } from 'firebase/firestore'
 import db from '../utils/firebase'
 
 /* TASKLIST TODOS
@@ -16,7 +16,7 @@ How do we DELETE a collection from our Firestore db?
 */
 
 
-export const TaskList = ({tasks, setTasks,filterStatus,setFilterStatus, filteredTasks}) => {
+export const TaskList = ({tasks, setTasks,filterStatus,setFilterStatus, filteredTasks,userId}) => {
 
   // const clearCompleted = ()=> {
   //   //Clear's Tasks by filtering out
@@ -28,6 +28,28 @@ export const TaskList = ({tasks, setTasks,filterStatus,setFilterStatus, filtered
   //     setFilterStatus("all")
   // }
 
+  // const clearCompleted = ()=> {
+  //   // With firebase we can delete a document
+  //   // For each task that is completed we can delteDoc()
+  //   // We need to look through the taskS and for each task that has a status of true, delete that document(delteDoc())
+
+ 
+
+  //   //how do we delete that document(task) from the database?
+
+  //   // How do we look through each task?
+  //   filteredTasks.forEach((item)=> {
+  //       // And do we get access to each task with the status of true?
+  //       if(item.status === true) {
+  //         deleteDoc(doc(db,"tasks",item.id))
+  //       }
+  //   })
+
+  //   setFilterStatus("all")
+    
+  //   // deleteDoc(doc(db, "tasks", id))
+  // }
+
   const clearCompleted = ()=> {
     // With firebase we can delete a document
     // For each task that is completed we can delteDoc()
@@ -36,18 +58,16 @@ export const TaskList = ({tasks, setTasks,filterStatus,setFilterStatus, filtered
  
 
     //how do we delete that document(task) from the database?
-
-    // How do we look through each task?
-    filteredTasks.forEach((item)=> {
-        // And do we get access to each task with the status of true?
-        if(item.status === true) {
-          deleteDoc(doc(db,"tasks",item.id))
-        }
-    })
-
-    setFilterStatus("all")
-    
-    // deleteDoc(doc(db, "tasks", id))
+    // We now need to filter out completed and setDoc to the new tasks array
+    const docRef = doc(db,"users", userId)
+    let arrayRef = filteredTasks.filter((item)=> item.status === false)
+    console.log(arrayRef)
+    // payload is what do you want the document to look like
+    const payload = {
+      tasks: arrayRef
+     }
+     // // updates the database
+     setDoc(docRef, payload)
   }
 
 
@@ -66,6 +86,7 @@ export const TaskList = ({tasks, setTasks,filterStatus,setFilterStatus, filtered
                     task = {task}
                     key = {task.id}
                     filteredTasks = {filteredTasks}
+                    userId = {userId}
                     />
             })}
 
